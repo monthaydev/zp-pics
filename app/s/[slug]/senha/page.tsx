@@ -1,0 +1,144 @@
+import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
+
+import BotaoTema from "@/components/BotaoTema";
+import Tela from "@/components/Tela";
+import { obterSessaoPorSlug } from "@/lib/galeria";
+import { lerCracha } from "@/lib/sessao-cliente";
+import { escalaCartaz, formatarData } from "@/lib/utils";
+
+import SenhaClient from "./SenhaClient";
+
+// O título nunca traz o nome do ensaio: ele apareceria no histórico do
+// navegador e em qualquer print da aba.
+export const metadata: Metadata = { title: "Entrar · ZP Pics" };
+
+/**
+ * Os três passos que a porta explica antes de pedir a senha.
+ *
+ * A maioria dos clientes nunca usou uma ferramenta de seleção, e o único passo
+ * que pode dar errado de verdade — finalizar, que apaga as não escolhidas — é o
+ * último. Quem chega sabendo disso não trava nos 40 minutos e não se assusta
+ * com o aviso no fim. Escolhido pelo João em 22/10/2026 ("Como funciona",
+ * `prototipos/senha/v2.html`).
+ */
+const PASSOS = [
+  {
+    titulo: "Olhe com calma",
+    texto: "Abra qualquer foto em tela cheia para ver de perto. Dá para passar de uma para a outra sem fechar.",
+  },
+  {
+    titulo: "Marque o coração",
+    texto: "Cada marcação salva sozinha. Pode fechar e voltar depois, de onde parou.",
+  },
+  {
+    titulo: "Finalize",
+    texto: "O ZP Studio recebe a lista e trata só as escolhidas. As outras são apagadas.",
+    alerta: "não tem volta",
+  },
+];
+
+export default async function SenhaPage({ params }: PageProps<"/s/[slug]/senha">) {
+  const { slug } = await params;
+
+  const sessao = await obterSessaoPorSlug(slug);
+  // 404 seco. O que protege o ensaio é a entropia do slug — 12 caracteres
+  // sorteados — e a senha, não fingir que todo link existe.
+  if (!sessao) notFound();
+
+  // Já entrou uma vez: não pede senha de novo a cada visita.
+  if (await lerCracha(slug)) redirect(`/s/${slug}`);
+
+  return (
+    /*
+      A porta de entrada é a única tela do produto sem foto nenhuma competindo
+      por atenção — e é a primeira que a maioria dos clientes vê, porque chegam
+      pelo link do WhatsApp e nunca passam pela home. Nenhuma foto aqui, nem
+      miniatura: mostrar antes da senha entregaria o ensaio a quem só tem o link.
+
+      Desktop: duas colunas — o ensaio e os passos à esquerda, a senha à
+      direita. Celular: título, senha, passos, NESTA ordem. O cliente chega
+      pelo WhatsApp para entrar; o campo não pode ficar três passos abaixo da
+      dobra. A ordem do DOM é a do celular (e a do leitor de tela); o grid do
+      desktop só reposiciona.
+    */
+    <Tela>
+      <div className="relative min-h-svh sm:px-5">
+        {/*
+          Perfuração de 35mm, em CSS puro — herdada do site. Duas faixas
+          laterais no desktop, uma superior no celular, onde largura é o
+          recurso escasso. `aria-hidden`: é a borda do filme, não tem o que
+          anunciar.
+        */}
+        <div aria-hidden className="sprockets absolute inset-y-0 left-0 hidden w-5 bg-superficie-2 sm:block" />
+        <div aria-hidden className="sprockets absolute inset-y-0 right-0 hidden w-5 bg-superficie-2 sm:block" />
+        <div aria-hidden className="sprockets h-5 bg-superficie-2 sm:hidden" />
+
+        <BotaoTema className="absolute right-4 top-8 z-10 sm:right-10 sm:top-4" />
+
+        <main className="grid min-h-svh lg:grid-cols-[1.1fr_0.9fr] lg:grid-rows-[auto_1fr]">
+          <header className="flex flex-col gap-3 px-4 pb-bloco pt-secao sm:px-10 lg:border-r lg:border-linha-forte lg:px-16">
+            <p className="font-hud text-hud uppercase tracking-cine text-tinta-3">ZP Studio</p>
+            {/* Reveal por máscara: a linha entra por baixo de um recorte. É o
+                mesmo efeito do site, que lá custava GSAP + SplitText e aqui são
+                duas regras de CSS. */}
+            <h1 className="mascara-linha">
+              <span
+                style={{ fontSize: escalaCartaz(sessao.titulo) }}
+                className="font-display uppercase leading-[0.94] tracking-cartaz text-balance"
+              >
+                {sessao.titulo}
+              </span>
+            </h1>
+          </header>
+
+          <section
+            aria-label="Entrar"
+            className="flex flex-col justify-center gap-bloco bg-superficie px-4 py-bloco sm:px-10 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:px-16"
+          >
+            <SenhaClient slug={slug} />
+
+            <p className="flex justify-between gap-4 border-y border-linha-forte py-3 font-hud text-hud uppercase tracking-cine text-tinta-2">
+              <span>Escolher até {formatarData(sessao.prazo_em)}</span>
+              <span className="tabular-nums">{sessao.fotos_incluidas} no pacote</span>
+            </p>
+          </section>
+
+          <section
+            aria-labelledby="como-funciona"
+            className="px-4 pb-secao pt-bloco sm:px-10 lg:col-start-1 lg:row-start-2 lg:border-r lg:border-linha-forte lg:px-16"
+          >
+            <h2 id="como-funciona" className="sr-only">
+              Como funciona
+            </h2>
+            {/* A numeração é informação, não enfeite: os passos são uma
+                sequência, e o último só vem depois dos outros dois. */}
+            <ol className="border-t border-linha-forte">
+              {PASSOS.map((passo, indice) => (
+                <li
+                  key={passo.titulo}
+                  className="grid grid-cols-[3rem_1fr] gap-4 border-b border-linha-forte py-5"
+                >
+                  <span aria-hidden className="font-display text-secao leading-none text-tinta-3">
+                    {indice + 1}
+                  </span>
+                  <div className="flex flex-col gap-1">
+                    <p className="font-body font-semibold text-tinta">
+                      {passo.titulo}
+                      {/* Ênfase em tinta, sublinhada — não em `rec`: o laranja
+                          só marca seleção e foco, e aqui não é nenhum dos dois. */}
+                      {passo.alerta && (
+                        <span className="underline decoration-1 underline-offset-4"> — {passo.alerta}</span>
+                      )}
+                    </p>
+                    <p className="text-apoio text-tinta-2">{passo.texto}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </main>
+      </div>
+    </Tela>
+  );
+}

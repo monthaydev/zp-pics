@@ -1,0 +1,578 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   ZP PICS — "35mm", nos dois temas
+
+   Duas camadas, e a distinção importa:
+
+   1. TINTAS (`@theme`, abaixo) — os valores crus. Preto de sala escura,
+      off-white de filme, e o papel de revelação do tema claro. Nunca use uma
+      tinta direto num componente: ela não sabe em que tema está.
+   2. PAPÉIS (`--fundo`, `--tinta`, `--linha`…) — o que a cor significa. É isto
+      que o componente usa. Trocar de tema é trocar quais tintas os papéis
+      apontam, e nada mais.
+
+   Antes desta separação eram 212 usos de `film-*` cravados em 27 arquivos, e
+   por isso não havia por onde um tema entrar.
+
+   O app não tem cor de marca: a cor vem das fotos. `rec` é a única exceção e
+   só tem duas funções — marcar que a foto foi escolhida e o :focus-visible.
+   Nunca use como decoração.
+   --------------------------------------------------------------------------- */
+
+@theme {
+  /* ── Tintas escuras: sala escura ───────────────────────────────────────── */
+  --color-film-black: #050505;
+  --color-film-900: #0a0a0a;
+  --color-film-800: #121212;
+  --color-film-700: #1c1c1c;
+  --color-film-grey: #7a7a74;
+  --color-film-400: #9c9c97;
+  --color-film-white: #edede8;
+
+  /* ── Tintas claras: papel de revelação ─────────────────────────────────
+     Não é branco. `#FFFFFF` ao lado de uma foto escura estoura e faz a foto
+     parecer suja; `#000000` na direção oposta faz o mesmo. Filme não tem nem
+     um nem outro — o claro daqui é o mesmo off-white do escuro, invertido. */
+  --color-papel: #f2f1ec;
+  --color-papel-100: #fffffe;
+  --color-papel-200: #e8e7e1;
+  --color-papel-300: #dfded7;
+  --color-papel-400: #c7c6bd;
+  --color-papel-600: #6e6d65;
+  --color-papel-700: #54534c;
+  --color-papel-900: #12120f;
+
+  /* ── REC ────────────────────────────────────────────────────────────────
+     Duas versões porque uma só não passa nos dois fundos. Medido:
+       #FF3D00 sobre #050505 → 5,73:1  ✓
+       #FF3D00 sobre #F2F1EC → 2,97:1  ✗ reprova em AA
+       #C42D00 sobre #F2F1EC → 4,80:1  ✓
+     `rec-tinta` é o mesmo laranja de REC com menos luz, não outra cor. Sem
+     ele o `+3 extras` do contador ficaria ilegível no tema claro. */
+  --color-rec: #ff3d00;
+  --color-rec-tinta: #c42d00;
+
+  --font-display: var(--fonte-display), sans-serif;
+  --font-body: var(--fonte-body), sans-serif;
+  --font-hud: var(--fonte-hud), ui-monospace, monospace;
+
+  /* Anton é caixa alta e pede respiro entre letras — mas só até text-secao.
+     No text-cartaz (perto de 8rem) o mesmo tracking abre demais e a palavra
+     desmancha; ali o tracking cai pra tracking-cartaz. */
+  --tracking-cine: 0.06em;
+  --tracking-cartaz: 0.02em;
+
+  /* ── ESCALA TIPOGRÁFICA ───────────────────────────────────────────────────
+     Antes desta escala cada tela escolhia uma classe do Tailwind por conta
+     própria, e o app inteiro cabia numa faixa de 25px (11px a 36px) — Anton,
+     que é desenhada para cartaz, rodava a 30px e virava "uma sans estreita em
+     caixa alta". Sete degraus nomeados (viram utilitário `text-*` do
+     Tailwind), e nada fora deles no fluxo do cliente. `clamp()` porque o
+     cartaz sangra: no celular ele não pode estourar a largura, no monitor não
+     pode ficar pequeno. */
+  --text-cartaz: clamp(2.75rem, 11vw, 8rem);
+  --text-cartaz--line-height: 0.94;
+  --text-quadro: clamp(2.5rem, 7vw, 3.5rem);
+  --text-quadro--line-height: 1;
+  --text-secao: clamp(1.5rem, 3.5vw, 2.25rem);
+  --text-secao--line-height: 1.15;
+  --text-corpo: 1rem;
+  --text-corpo--line-height: 1.65;
+  --text-apoio: 0.875rem;
+  --text-apoio--line-height: 1.5;
+  --text-hud: 0.75rem;
+  --text-hud--line-height: 1.4;
+  --text-quadronum: 0.6875rem;
+  --text-quadronum--line-height: 1.3;
+
+  /* ── RITMO ESPACIAL ───────────────────────────────────────────────────────
+     Três degraus, e só três — nada de `mt-3` avulso decidido caso a caso.
+     Viram utilitário `*-junto` / `*-bloco` / `*-secao` do Tailwind (padding,
+     margin, gap). `secao` é o degrau que faltava: hoje o espaçamento vertical
+     do fluxo do cliente é uniforme (mt-3/mt-4/mt-8), e sem um degrau bem maior
+     que o resto tudo lê como um bloco só. */
+  --spacing-junto: 0.75rem;
+  --spacing-bloco: 2rem;
+  --spacing-secao: clamp(4rem, 10vh, 7rem);
+
+  /* Dois degraus densos, só do painel — a bancada é ferramenta de trabalho, não
+     galeria. `spacing-secao` é proibido lá: é ele que produz o oceano preto
+     entre seções que o Plano — A Bancada diagnosticou. `linha` é o respiro
+     dentro de uma linha de tabela (rótulo → valor); `faixa` é entre blocos da
+     bancada — menor que `bloco`, porque a bancada é densa por design. */
+  --spacing-linha: 0.5rem;
+  --spacing-faixa: 1.25rem;
+}
+
+/* ---------------------------------------------------------------------------
+   PAPÉIS
+
+   O seletor é de atributo simples (`[data-tema="escuro"]`), e não
+   `:root[data-tema…]`, de propósito: assim qualquer subárvore consegue forçar
+   um tema por conta própria. É o que o lightbox usa para ficar escuro mesmo
+   com o app no claro — julgar exposição e cor contra fundo claro é falso, e
+   nisso o fotógrafo ganha do gosto do usuário.
+
+   Ordem importa. `:root` e `[data-tema="escuro"]` têm a mesma especificidade
+   (0,1,0), então o bloco escuro precisa vir depois para vencer no empate.
+   --------------------------------------------------------------------------- */
+
+:root,
+[data-tema="claro"] {
+  color-scheme: light;
+
+  --fundo: var(--color-papel);
+  --superficie: var(--color-papel-100);
+  --superficie-2: var(--color-papel-200);
+  --linha: var(--color-papel-300);
+  --linha-forte: var(--color-papel-400);
+  --tinta: var(--color-papel-900);
+  --tinta-2: var(--color-papel-700);
+  --tinta-3: var(--color-papel-600);
+  --rec-papel: var(--color-rec-tinta);
+  /* Véu do diálogo destrutivo. Escuro nos dois temas: é um aviso de coisa
+     irreversível, não um cartão. */
+  --veu: rgb(18 18 15 / 0.55);
+  /* Qual ícone o botão de tema mostra. Fica aqui, e não em JS, porque o
+     servidor não sabe o tema do navegador — ver components/BotaoTema.tsx. */
+  --sol: none;
+  --lua: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) {
+    color-scheme: dark;
+
+    --fundo: var(--color-film-black);
+    --superficie: var(--color-film-900);
+    --superficie-2: var(--color-film-800);
+    --linha: var(--color-film-800);
+    --linha-forte: var(--color-film-700);
+    --tinta: var(--color-film-white);
+    --tinta-2: var(--color-film-400);
+    --tinta-3: var(--color-film-grey);
+    --rec-papel: var(--color-rec);
+    --veu: rgb(5 5 5 / 0.9);
+    --sol: block;
+    --lua: none;
+  }
+}
+
+[data-tema="escuro"] {
+  color-scheme: dark;
+
+  --fundo: var(--color-film-black);
+  --superficie: var(--color-film-900);
+  --superficie-2: var(--color-film-800);
+  --linha: var(--color-film-800);
+  --linha-forte: var(--color-film-700);
+  --tinta: var(--color-film-white);
+  --tinta-2: var(--color-film-400);
+  --tinta-3: var(--color-film-grey);
+  --rec-papel: var(--color-rec);
+  --veu: rgb(5 5 5 / 0.9);
+  --sol: block;
+  --lua: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Os papéis viram utilitário do Tailwind: `bg-fundo`, `text-tinta-2`,
+   `border-linha`. `@theme inline` é o que permite que eles sigam trocando em
+   runtime — um `@theme` normal congelaria o valor na compilação.
+
+   `rec` continua apontando para o laranja pleno: é a cor da seleção e do foco,
+   e num fundo escuro ela deve ser exatamente o REC. `rec-papel` é a versão que
+   o tema escolhe — use ela em TEXTO, onde o contraste precisa passar.
+   --------------------------------------------------------------------------- */
+@theme inline {
+  --color-fundo: var(--fundo);
+  --color-superficie: var(--superficie);
+  --color-superficie-2: var(--superficie-2);
+  --color-linha: var(--linha);
+  --color-linha-forte: var(--linha-forte);
+  --color-tinta: var(--tinta);
+  --color-tinta-2: var(--tinta-2);
+  --color-tinta-3: var(--tinta-3);
+  --color-rec-papel: var(--rec-papel);
+  --color-veu: var(--veu);
+}
+
+/* ---------------------------------------------------------------------------
+   Ponte para o shadcn/ui — SÓ o painel da ZP usa isto.
+   Os componentes do shadcn referenciam nomes semânticos (`--background`,
+   `--primary`…). Em vez de deixar o CLI plantar a paleta dele por cima — que
+   brigaria com os papéis acima — apontamos cada nome para um papel. Assim o
+   componente instalado pelo CLI já nasce no tema certo, nos dois temas.
+
+   `destructive` não está aqui de propósito: o único vermelho do projeto é o
+   `rec`, e ele tem dono (seleção + foco). Quando aparecer a primeira ação
+   destrutiva de verdade, é decisão de design, não de conveniência.
+   --------------------------------------------------------------------------- */
+@theme inline {
+  --color-background: var(--fundo);
+  --color-foreground: var(--tinta);
+  --color-card: var(--superficie);
+  --color-card-foreground: var(--tinta);
+  --color-popover: var(--superficie);
+  --color-popover-foreground: var(--tinta);
+  /* Botão principal é o negativo do fundo: contraste de filme, zero cor de
+     marca. Inverte sozinho quando o tema troca. */
+  --color-primary: var(--tinta);
+  --color-primary-foreground: var(--fundo);
+  --color-secondary: var(--superficie-2);
+  --color-secondary-foreground: var(--tinta);
+  --color-muted: var(--superficie-2);
+  --color-muted-foreground: var(--tinta-2);
+  --color-accent: var(--superficie-2);
+  --color-accent-foreground: var(--tinta);
+  --color-border: var(--linha-forte);
+  --color-input: var(--linha-forte);
+  --color-ring: var(--rec-papel);
+
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+}
+
+/* Ferramenta, não cartão. Canto quase reto. */
+:root {
+  --radius: 2px;
+}
+
+/* `@layer base`, não solto: uma regra fora de qualquer `@layer` vence QUALQUER
+   utilitário do Tailwind, não importa a especificidade — é assim que a cascata
+   de camadas funciona. Solto, este reset global vencia até um `min-w-40`
+   escrito a dedo, zerando o `min-width` computado pra 0px silenciosamente.
+   Bug real, achado testando o painel novo: a coluna de título de uma linha da
+   lista colapsava pra ~1px em vez de reservar 160px. Dentro de `base`, os
+   utilitários do Tailwind (camada `utilities`, que vem depois) voltam a
+   vencer, que é o comportamento que todo o resto do app já pressupunha. */
+@layer base {
+  * {
+    min-width: 0;
+  }
+}
+
+html {
+  background-color: var(--fundo);
+}
+
+body {
+  background-color: var(--fundo);
+  color: var(--tinta);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  /* a grade tem 400 itens; overscroll horizontal aqui é sempre bug */
+  overflow-x: hidden;
+}
+
+/* Este produto se usa no teclado. O foco nunca some. */
+:focus-visible {
+  outline: 2px solid var(--rec-papel);
+  outline-offset: 2px;
+  border-radius: 1px;
+}
+
+::selection {
+  background-color: var(--tinta);
+  color: var(--fundo);
+}
+
+/* ---------------------------------------------------------------------------
+   MOVIMENTO
+
+   A régua, e ela vale para tudo que for adicionado aqui depois:
+
+     Movimento só como RESPOSTA A UMA AÇÃO do cliente, ou como ENTRADA ÚNICA
+     de um elemento. Nada em laço, nada que se mexa sozinho enquanto o cliente
+     está parado olhando uma foto.
+
+   Isso descarta grão animado, parallax, marquee e pulsação — não por estarem
+   numa lista de proibidos, mas porque competem com a foto no momento em que
+   ela está sendo julgada. E libera o que faltava: o coração que reage, a
+   grade que entra conforme se rola, o número que confirma que subiu.
+
+   Tudo aqui é CSS. Nenhuma dependência: numa tela com 400 fotos, animação que
+   passa pela main thread é exatamente o que a fase de performance passou o
+   tempo todo protegendo.
+   --------------------------------------------------------------------------- */
+
+@keyframes foto-entra {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Entrada da grade, presa ao scroll.
+   `view()` roda no compositor e custa zero JavaScript — um IntersectionObserver
+   com 400 alvos faria o mesmo efeito cobrando main thread. Fica atrás de
+   `@supports` porque é enhancement puro: onde não houver suporte, a foto
+   simplesmente aparece, como sempre apareceu.
+
+   A animação mora na `<li>`, e não no conteúdo dela: a `<li>` tem
+   `content-visibility: auto`, que pula a renderização do que está dentro — uma
+   animação lá dentro não rodaria enquanto o item estivesse fora da tela.
+
+   `entry 0% cover 22%` dá folga de propósito: o item precisa terminar de
+   entrar bem antes do centro da tela, senão o cliente vê a foto ainda subindo
+   no momento em que já está decidindo sobre ela. */
+@supports (animation-timeline: view()) {
+  .foto-entra {
+    animation: foto-entra linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 22%;
+  }
+}
+
+@keyframes numero-sobe {
+  from {
+    opacity: 0;
+    transform: translateY(0.5em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes numero-desce {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.numero-sobe {
+  animation: numero-sobe 200ms ease-out;
+}
+
+.numero-desce {
+  animation: numero-desce 200ms ease-out;
+}
+
+/* Reveal por máscara de linha, herdado do site do ZP Studio — lá era GSAP com
+   SplitText, aqui é o mesmo efeito em duas regras. A linha entra por baixo de
+   um recorte. Só nas telas sem foto na tela: numa grade de 400 seria ruído. */
+@keyframes linha-sobe {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.mascara-linha {
+  display: block;
+  overflow: hidden;
+}
+
+.mascara-linha > * {
+  display: block;
+  animation: linha-sobe 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes aviso-entra {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.aviso-entra {
+  animation: aviso-entra 220ms ease-out;
+}
+
+/* Halation: o brilho quente que a luz forte cria ao atravessar o filme. É a
+   única coisa do vocabulário do site que sobrevive dentro da grade — porque é
+   quente, é sutil e não pisca. No tema claro ele não tem sentido físico (não
+   há luz atravessando nada) e some sozinho, pelo token. */
+:root,
+[data-tema="claro"] {
+  --halation: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) {
+    --halation: radial-gradient(
+      ellipse 70% 60% at 50% 40%,
+      rgb(255 170 120 / 0.14) 0%,
+      transparent 62%
+    );
+  }
+}
+
+[data-tema="escuro"] {
+  --halation: radial-gradient(
+    ellipse 70% 60% at 50% 40%,
+    rgb(255 170 120 / 0.14) 0%,
+    transparent 62%
+  );
+}
+
+.halation::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--halation);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 400ms ease;
+  pointer-events: none;
+}
+
+.halation:hover::after,
+.halation:focus-within::after {
+  opacity: 1;
+}
+
+/* Perfuração de filme: os furos laterais de um negativo 35mm, em CSS puro.
+   Vem do site. Só na porta de entrada, onde ainda não há foto competindo. */
+.sprockets {
+  background-image: radial-gradient(
+    circle at center,
+    var(--fundo) 0 42%,
+    transparent 43%
+  );
+  background-size: 20px 20px;
+  background-repeat: repeat;
+}
+
+/* ── Trilha de perfuração — a aposta do redesenho da folha de contato ────────
+   Uma faixa de 20px na borda esquerda da galeria com a mesma perfuração
+   35mm, presa ao scroll: conforme o cliente rola, a película avança. É a
+   única peça deste redesenho que é risco — medir no celular antes de
+   confirmar. `animation-timeline: scroll()` roda no compositor, sem
+   JavaScript, mesmo mecanismo do `view()` que já anima a entrada da grade.
+
+   PARA REMOVER: apague este bloco e a classe `trilha-filme` do `<main>` da
+   galeria (`app/s/[slug]/page.tsx`). Nada mais depende dela.
+
+   `@supports`: onde o navegador não suporta scroll-timeline, a faixa não
+   aparece — nunca um degrau visual quebrado, só a ausência do enhancement. */
+@supports (animation-timeline: scroll()) {
+  .trilha-filme::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 20px;
+    display: none;
+    background-color: var(--superficie-2);
+    background-image: radial-gradient(
+      circle at center,
+      var(--fundo) 0 42%,
+      transparent 43%
+    );
+    background-size: 20px 20px;
+    background-repeat: repeat;
+    animation: trilha-avanca linear;
+    animation-timeline: scroll(nearest block);
+    pointer-events: none;
+  }
+
+  /* Só a partir do desktop: no celular a largura é o recurso escasso, e é lá
+     que a maioria dos clientes da ZP abre o link. */
+  @media (min-width: 1024px) {
+    .trilha-filme::before {
+      display: block;
+    }
+  }
+}
+
+@keyframes trilha-avanca {
+  from {
+    background-position-y: 0;
+  }
+  to {
+    background-position-y: 4000px;
+  }
+}
+
+/* ── Troca de tela ──────────────────────────────────────────────────────────
+   As páginas do cliente são uma sequência — senha, grade, resumo —, e até aqui
+   cada passo apagava a tela e acendia a próxima. O crossfade não é enfeite: é
+   o que diz que o cliente continua no mesmo lugar, andando dentro do próprio
+   ensaio, em vez de ter caído em outro site a cada passo.
+
+   O tempo é assimétrico de propósito: o que sai, sai rápido, para não disputar
+   atenção; o que chega, chega mais devagar e só depois que o anterior saiu. */
+::view-transition-old(.tela-sai) {
+  animation: 130ms ease-in both tela-some;
+}
+
+::view-transition-new(.tela-entra) {
+  animation: 220ms ease-out 90ms both tela-surge;
+}
+
+@keyframes tela-some {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes tela-surge {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Enquanto a transição roda, a camada dela engole os cliques. Numa tela em que
+   o cliente clica rápido em 400 fotos, um clique perdido é uma escolha
+   perdida. */
+::view-transition {
+  pointer-events: none;
+}
+
+@keyframes lightbox-entra {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* O lightbox cresce um fio ao abrir em vez de estampar na tela. É o suficiente
+   para o olho entender que ele veio da grade que está atrás, e custa uma
+   animação de 160ms num único elemento. */
+.lightbox-entra {
+  animation: lightbox-entra 160ms ease-out;
+}
+
+/* Nada aqui é essencial para o produto funcionar: quem pediu menos movimento
+   recebe o app inteiro, parado. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
