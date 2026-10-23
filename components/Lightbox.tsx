@@ -190,7 +190,11 @@ export default function Lightbox({
           alt=""
           aria-hidden="true"
           draggable={false}
-          className="absolute inset-2 size-[calc(100%-1rem)] object-contain sm:inset-6 sm:size-[calc(100%-3rem)]"
+          // Ampliada de 400 px para a tela toda, a miniatura estoura em
+          // pixels; o blur a faz parecer foto fora de foco, que o olho aceita
+          // como "ainda carregando", em vez de granulado, que parece defeito.
+          className="absolute inset-2 size-[calc(100%-1rem)] object-contain blur-md sm:inset-6 sm:size-[calc(100%-3rem)]"
+          hidden={!carregando}
         />
 
         {/* eslint-disable-next-line @next/next/no-img-element -- a prévia já sai
