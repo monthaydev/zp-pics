@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 
+import { emailEhAdmin } from "@/lib/admin-permitido";
 import { esquemaLogin } from "@/lib/schemas";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
@@ -31,6 +32,14 @@ export async function entrar(
     email: analise.data.email,
     password: analise.data.senha,
   });
+
+  // Senha certa de alguém que não é admin recebe a MESMA mensagem de senha
+  // errada — responder diferente confirmaria que aquele e-mail tem conta — e a
+  // sessão que o Supabase acabou de abrir é derrubada na hora.
+  if (!error && !emailEhAdmin(analise.data.email)) {
+    await supabase.auth.signOut();
+    return { erro: "E-mail ou senha incorretos." };
+  }
 
   if (error) {
     // Mensagem única de propósito: dizer "este e-mail não existe" entrega quais

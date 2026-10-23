@@ -3,6 +3,7 @@ import "server-only";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 
+import { emailEhAdmin } from "@/lib/admin-permitido";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
 /**
@@ -24,7 +25,8 @@ export const obterAdmin = cache(async () => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  return user;
+  // Estar logado no Supabase não basta: o e-mail tem que estar em ADMIN_EMAILS.
+  return user && emailEhAdmin(user.email) ? user : null;
 });
 
 /**

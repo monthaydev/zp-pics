@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { emailEhAdmin } from "@/lib/admin-permitido";
+
 /**
  * Proxy — no Next 16 é o que antes se chamava middleware (mesma função, nome
  * novo). Faz duas coisas, nesta ordem:
@@ -41,8 +43,11 @@ export async function proxy(request: NextRequest) {
   // getUser() confere o token com o servidor de auth. getSession() só lê o
   // cookie e aceita o que estiver escrito nele — não serve para decidir acesso.
   const {
-    data: { user },
+    data: { user: usuario },
   } = await supabase.auth.getUser();
+  // Logado e na lista de admins. Quem tem conta no Supabase mas não está na
+  // lista é tratado como visitante — nunca chega a ver o painel.
+  const user = usuario && emailEhAdmin(usuario.email) ? usuario : null;
 
   const caminho = request.nextUrl.pathname;
   const ehLogin = caminho === "/admin/login";

@@ -48,3 +48,6 @@ CLAUDE.md
 AGENTS.md
 prototipos/
 scripts/
+
+.vercel
+.env*
