@@ -18,9 +18,12 @@ import { apagarSessao } from "./entrega-acoes";
 export default function ApagarSessao({
   sessaoId,
   titulo,
+  clienteEscolhendo,
 }: {
   sessaoId: string;
   titulo: string;
+  /** Sessão aberta: o cliente pode estar no meio da escolha agora. */
+  clienteEscolhendo: boolean;
 }) {
   const router = useRouter();
   const [aberto, setAberto] = useState(false);
@@ -107,6 +110,13 @@ export default function ApagarSessao({
             sessão inteira. <strong>Não tem como voltar.</strong>
           </span>
         </p>
+
+        {clienteEscolhendo && (
+          <p className="mt-3 text-sm leading-relaxed text-tinta-2">
+            A sessão está aberta: se o cliente estiver escolhendo agora, a
+            galeria dele sai do ar e o que ele marcou se perde.
+          </p>
+        )}
 
         <p className="mt-4 text-sm leading-relaxed text-tinta-2">
           Para confirmar, digite o nome da sessão:{" "}

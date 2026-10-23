@@ -459,9 +459,9 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
             </div>
           </details>
 
-          {/* Não em "subir": o dropzone já é a bancada inteira lá. Em "abrir"
-              continua alcançável — nada impede de subir mais uma foto antes
-              de abrir pro cliente. */}
+          {/* Só enquanto ainda dá pra escolher: em "subir" o dropzone já é a
+              bancada inteira, e depois de finalizada as não escolhidas já
+              saíram do R2, então subir mais foto não faz sentido. */}
           {(etapa === "abrir" || etapa === "escolhendo" || etapa === "expirada") && (
             <details className="border-t border-linha pt-faixa">
               <summary className="cursor-pointer font-hud text-quadronum uppercase tracking-cine text-tinta-3 transition-colors hover:text-tinta-2">
@@ -492,7 +492,11 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
               Apaga tudo: fotos, seleções, entregas e a sessão inteira. Sem volta.
             </p>
             <div className="mt-3">
-              <ApagarSessao sessaoId={sessao.id} titulo={sessao.titulo} />
+              <ApagarSessao
+                sessaoId={sessao.id}
+                titulo={sessao.titulo}
+                clienteEscolhendo={sessao.status === "aberta"}
+              />
             </div>
           </div>
 

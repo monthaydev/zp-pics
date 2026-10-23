@@ -428,7 +428,7 @@ export async function apagarSessao(entrada: unknown): Promise<ResultadoEntrega> 
   const supabase = await criarClienteServidor();
   const { data: sessao } = await supabase
     .from("sessoes")
-    .select("status")
+    .select("id")
     .eq("id", sessao_id)
     .maybeSingle();
 
