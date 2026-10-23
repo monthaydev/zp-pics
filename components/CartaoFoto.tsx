@@ -4,6 +4,7 @@ import { Heart } from "lucide-react";
 import { memo } from "react";
 
 import type { FotoDaGaleria } from "@/lib/galeria";
+import { preCarregarPrevia } from "@/lib/previa";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -68,6 +69,7 @@ function CartaoFoto({
   // expor. Antes só existia dentro do `alt`, invisível pra quem enxerga — e é
   // o identificador que o cliente lê em voz alta pro fotógrafo no WhatsApp.
   const quadro = String(posicao).padStart(3, "0");
+  const aquecer = () => preCarregarPrevia(foto.key_preview);
 
   return (
     <li
@@ -85,6 +87,8 @@ function CartaoFoto({
           type="button"
           onClick={aoAbrir}
           onFocus={aoFocar}
+          onPointerEnter={aquecer}
+          onPointerDown={aquecer}
           // Roving tabindex: só um cartão fica no caminho do Tab. Sem isto são
           // 800 paradas de tabulação num ensaio de 400 fotos, e quem usa
           // teclado desiste antes da vigésima.

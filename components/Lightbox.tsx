@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Heart, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { FotoDaGaleria } from "@/lib/galeria";
+import { preCarregarPrevia } from "@/lib/previa";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -119,13 +120,17 @@ export default function Lightbox({
     return () => window.removeEventListener("keydown", aoTeclar);
   }, [anterior, proxima, aoFechar, aoAlternar, foto, travada]);
 
-  // Vizinhos em cache. Só dois: é o que a navegação por seta alcança antes de a
-  // rede responder, e pré-carregar mais vira download de ensaio inteiro.
+  // Vizinhos em cache: dois de cada lado, a ordem importa (o próximo primeiro).
+  // É o que a navegação por seta alcança antes de a rede responder, e
+  // pré-carregar mais vira download de ensaio inteiro.
   useEffect(() => {
-    for (const vizinho of [fotos[indice - 1], fotos[indice + 1]]) {
-      if (!vizinho) continue;
-      const img = new Image();
-      img.src = `/api/img/${vizinho.key_preview}`;
+    for (const vizinho of [
+      fotos[indice + 1],
+      fotos[indice - 1],
+      fotos[indice + 2],
+      fotos[indice - 2],
+    ]) {
+      if (vizinho) preCarregarPrevia(vizinho.key_preview);
     }
   }, [fotos, indice]);
 
@@ -173,11 +178,20 @@ export default function Lightbox({
       </header>
 
       <div className="relative flex min-h-0 flex-1 items-center justify-center p-2 sm:p-6">
-        {carregando && (
-          <p className="absolute font-body text-xs font-medium text-tinta-3">
-            carregando…
-          </p>
-        )}
+        {/* A miniatura já está no cache (é o que a grade mostra), então abre na
+            hora, ampliada, e a prévia nítida assenta por cima quando chegar.
+            Antes o quadro ficava preto com "carregando…" até a prévia de
+            1600 px terminar de baixar. Mesma caixa e mesmo `object-contain`
+            nas duas, para a troca não dar salto. */}
+        {/* eslint-disable-next-line @next/next/no-img-element -- ver abaixo */}
+        <img
+          key={`m-${foto.id}`}
+          src={`/api/img/${foto.key_thumb}`}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          className="absolute inset-2 size-[calc(100%-1rem)] object-contain sm:inset-6 sm:size-[calc(100%-3rem)]"
+        />
 
         {/* eslint-disable-next-line @next/next/no-img-element -- a prévia já sai
             do navegador do admin no tamanho e no formato finais; o otimizador da
@@ -191,9 +205,7 @@ export default function Lightbox({
           onLoad={() => setCarregada(foto.id)}
           draggable={false}
           className={cn(
-            // Sem a duração explícita a foto nova aparecia seca no lugar da
-            // anterior, e navegar de seta virava um pisca-pisca preto.
-            "max-h-full max-w-full object-contain transition-opacity duration-200 ease-out",
+            "absolute inset-2 size-[calc(100%-1rem)] object-contain transition-opacity duration-200 ease-out sm:inset-6 sm:size-[calc(100%-3rem)]",
             carregando ? "opacity-0" : "opacity-100",
           )}
         />
