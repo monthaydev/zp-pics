@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { exigirAdmin } from "@/lib/auth";
 import { apagarObjetos, chaveObjeto } from "@/lib/r2";
-import { esquemaAbrirSessao, esquemaReabrir, esquemaRegistrarFotos } from "@/lib/schemas";
+import { esquemaAbrirSessao, esquemaPacote, esquemaReabrir, esquemaRegistrarFotos } from "@/lib/schemas";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
 export type ResultadoRegistro = { ok: boolean; erro?: string };
@@ -130,6 +130,34 @@ export async function reabrirSessao(entrada: unknown): Promise<ResultadoRegistro
     .in("status", ["finalizada", "expirada"]);
 
   if (error) return { ok: false, erro: error.message };
+
+  revalidatePath(`/admin/sessoes/${sessao_id}`);
+  revalidatePath("/admin");
+  return { ok: true };
+}
+
+/**
+ * Muda quantas fotos o pacote inclui, com a sessão já criada.
+ *
+ * Vale em qualquer status: o número só alimenta o contador e o "extra" da
+ * galeria, não apaga nem libera nada. Passar do pacote nunca bloqueou o cliente
+ * (regra 3), então mexer aqui no meio da escolha é seguro.
+ */
+export async function atualizarPacote(entrada: unknown): Promise<ResultadoRegistro> {
+  await exigirAdmin();
+
+  const analise = esquemaPacote.safeParse(entrada);
+  if (!analise.success) {
+    return { ok: false, erro: analise.error.issues[0]?.message ?? "Número inválido." };
+  }
+  const { sessao_id, fotos_incluidas } = analise.data;
+
+  const supabase = await criarClienteServidor();
+  const { error } = await supabase
+    .from("sessoes")
+    .update({ fotos_incluidas })
+    .eq("id", sessao_id);
+  if (error) return { ok: false, erro: "Não deu pra salvar o pacote." };
 
   revalidatePath(`/admin/sessoes/${sessao_id}`);
   revalidatePath("/admin");

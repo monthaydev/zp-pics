@@ -38,6 +38,11 @@ export const esquemaSessao = z.object({
   observacoes: z.string().trim().max(2000).optional(),
 });
 
+export const esquemaPacote = z.object({
+  sessao_id: z.uuid(),
+  fotos_incluidas: esquemaSessao.shape.fotos_incluidas,
+});
+
 export type EntradaSessao = z.infer<typeof esquemaSessao>;
 
 export const esquemaSenha = z.object({

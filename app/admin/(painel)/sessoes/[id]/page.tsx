@@ -29,6 +29,7 @@ import {
 import ApagarSessao from "./ApagarSessao";
 import BotaoAbrir from "./BotaoAbrir";
 import EditarContato from "./EditarContato";
+import EditarPacote from "./EditarPacote";
 import EntregaClient from "./EntregaClient";
 import ReabrirSessao from "./ReabrirSessao";
 import UploadClient from "./UploadClient";
@@ -450,6 +451,15 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
               — aqui elas não voltam.
             </p>
           )}
+
+          <details className="pt-faixa">
+            <summary className="cursor-pointer font-body text-quadronum font-medium text-tinta-3 transition-colors hover:text-tinta-2">
+              Pacote de fotos
+            </summary>
+            <div className="mt-4">
+              <EditarPacote sessaoId={sessao.id} fotosIncluidas={sessao.fotos_incluidas} />
+            </div>
+          </details>
 
           <details className="pt-faixa">
             <summary className="cursor-pointer font-body text-quadronum font-medium text-tinta-3 transition-colors hover:text-tinta-2">
