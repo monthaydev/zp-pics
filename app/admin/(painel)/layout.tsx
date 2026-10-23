@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import BotaoTema from "@/components/BotaoTema";
+import MarcaZP from "@/components/MarcaZP";
 import { Button } from "@/components/ui/button";
 import { exigirAdmin } from "@/lib/auth";
 
@@ -24,8 +25,9 @@ export default async function PainelLayout({ children }: LayoutProps<"/admin">) 
       <header className="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-linha px-6 py-4">
         <Link
           href="/admin"
-          className="font-display text-lg uppercase tracking-cine"
+          className="flex items-center gap-3 font-display text-lg uppercase tracking-cine"
         >
+          <MarcaZP tamanho={32} />
           ZP Pics
         </Link>
 

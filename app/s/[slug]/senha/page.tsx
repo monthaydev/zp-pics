@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import BotaoTema from "@/components/BotaoTema";
+import MarcaZP from "@/components/MarcaZP";
 import Tela from "@/components/Tela";
 import { obterSessaoPorSlug } from "@/lib/galeria";
 import { lerCracha } from "@/lib/sessao-cliente";
@@ -78,6 +79,7 @@ export default async function SenhaPage({ params }: PageProps<"/s/[slug]/senha">
 
         <main className="grid min-h-svh lg:grid-cols-[1.1fr_0.9fr] lg:grid-rows-[auto_1fr]">
           <header className="flex flex-col gap-3 px-4 pb-bloco pt-secao sm:px-10 lg:border-r lg:border-linha-forte lg:px-16">
+            <MarcaZP tamanho={44} className="mb-3" />
             {/* Reveal por máscara: a linha entra por baixo de um recorte. É o
                 mesmo efeito do site, que lá custava GSAP + SplitText e aqui são
                 duas regras de CSS. */}

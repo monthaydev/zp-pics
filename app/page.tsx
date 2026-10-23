@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import BotaoTema from "@/components/BotaoTema";
+import MarcaZP from "@/components/MarcaZP";
 import Tela from "@/components/Tela";
 
 import EntrarClient from "./EntrarClient";
@@ -37,6 +38,7 @@ export default function Home() {
 
         <div className="mt-bloco flex flex-1 flex-col justify-center gap-bloco">
           <header className="flex flex-col gap-3">
+            <MarcaZP tamanho={48} className="mb-3" />
             <h1 className="font-display text-cartaz uppercase tracking-cartaz text-balance">
               Suas
               <br />
