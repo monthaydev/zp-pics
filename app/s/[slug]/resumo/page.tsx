@@ -31,7 +31,7 @@ export default async function ResumoPage({ params }: PageProps<"/s/[slug]/resumo
     <Tela>
       <main className="mx-auto w-full max-w-4xl px-6 py-16">
         <div className="flex items-start justify-between gap-4">
-          <p className="font-hud text-hud uppercase tracking-cine text-tinta-2">
+          <p className="font-body text-hud font-medium text-tinta-2">
             Seleção enviada
           </p>
           <BotaoTema className="-mr-2 -mt-1 shrink-0" />
@@ -49,9 +49,9 @@ export default async function ResumoPage({ params }: PageProps<"/s/[slug]/resumo
         </p>
         {extras > 0 && (
           <p className="mt-2 text-apoio text-tinta-3">
-            — <span className="font-hud text-rec-papel">{extras}</span> além do seu
-            pacote de {sessao.fotos_incluidas}, que o ZP Studio combina com você
-            pelo WhatsApp
+            Sendo <span className="font-hud text-rec-papel">{extras}</span> além do
+            seu pacote de {sessao.fotos_incluidas}. O ZP Studio combina essas com
+            você pelo WhatsApp.
           </p>
         )}
 
@@ -70,7 +70,7 @@ export default async function ResumoPage({ params }: PageProps<"/s/[slug]/resumo
             imagens — devolver a ele uma listagem de nomes de arquivo era premiar o
             trabalho com um `ls`. */}
         <section className="mt-bloco">
-          <h2 className="font-hud text-hud uppercase tracking-cine text-tinta-3">
+          <h2 className="font-body text-hud font-medium text-tinta-3">
             Suas fotos escolhidas
           </h2>
 
@@ -111,16 +111,16 @@ export default async function ResumoPage({ params }: PageProps<"/s/[slug]/resumo
 
         {/* A lista corrida continua existindo: é o formato que serve pra conferir
             nome por nome, e agora sai do caminho de quem só queria ver as fotos. */}
-        <details className="mt-secao border-t border-linha pt-bloco">
-          <summary className="cursor-pointer font-hud text-hud uppercase tracking-cine text-tinta-3 transition-colors hover:text-tinta-2">
+        <details className="mt-secao">
+          <summary className="cursor-pointer font-body text-hud font-medium text-tinta-3 transition-colors hover:text-tinta-2">
             Ver a lista de nomes
           </summary>
 
-          <ol className="mt-bloco divide-y divide-linha border-y border-linha">
+          <ol className="mt-bloco">
             {fotos.map((foto, indice) => (
               <li
                 key={foto.id}
-                className="flex items-center gap-4 py-2.5 font-hud text-apoio"
+                className="flex items-center gap-4 py-1.5 font-hud text-apoio"
               >
                 <span className="w-8 shrink-0 text-right text-tinta-3">
                   {indice + 1}

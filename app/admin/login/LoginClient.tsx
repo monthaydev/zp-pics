@@ -55,14 +55,14 @@ export default function LoginClient({ de }: { de: string }) {
       </div>
 
       {/* aria-live porque o erro chega depois do envio, sem recarregar a tela */}
-      <p aria-live="polite" className="min-h-5 font-hud text-xs text-rec-papel">
+      <p aria-live="polite" className="min-h-5 font-body text-xs text-rec-papel">
         {estado.erro}
       </p>
 
       <button
         type="submit"
         disabled={pendente}
-        className="h-12 w-full bg-tinta font-body text-sm font-medium uppercase tracking-cine text-fundo transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
+        className="h-12 w-full bg-tinta font-body text-sm font-medium text-fundo transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
       >
         {pendente ? "Entrando…" : "Entrar"}
       </button>

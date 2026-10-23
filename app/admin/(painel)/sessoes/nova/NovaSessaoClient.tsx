@@ -31,11 +31,11 @@ function Campo({
       {children}
       {/* O erro é texto ao lado do campo, não só a borda vermelha do input */}
       {erro ? (
-        <p id={`${id}-erro`} className="font-hud text-xs text-rec-papel">
+        <p id={`${id}-erro`} className="font-body text-xs text-rec-papel">
           {erro}
         </p>
       ) : dica ? (
-        <p className="font-hud text-xs text-tinta-3">{dica}</p>
+        <p className="font-body text-xs text-tinta-3">{dica}</p>
       ) : null}
     </div>
   );
@@ -60,10 +60,10 @@ function Grupo({
   children: ReactNode;
 }) {
   return (
-    <fieldset className="min-w-0 border-t border-linha pt-6">
+    <fieldset className="min-w-0 pt-6">
       <legend className="mb-6 flex w-full items-baseline gap-2 px-0">
         <span className="font-hud text-xs text-tinta-3">{numero}</span>
-        <span className="font-hud text-xs uppercase tracking-cine text-tinta-2">
+        <span className="font-body text-xs font-medium text-tinta-2">
           {titulo}
         </span>
       </legend>
@@ -175,12 +175,12 @@ export default function NovaSessaoClient() {
       </Grupo>
 
       {estado.geral && (
-        <p aria-live="polite" className="font-hud text-xs text-rec-papel">
+        <p aria-live="polite" className="font-body text-xs text-rec-papel">
           {estado.geral}
         </p>
       )}
 
-      <div className="border-t border-linha pt-6">
+      <div className="pt-6">
         <div className="flex items-center gap-3">
           <Button type="submit" size="lg" disabled={pendente}>
             {pendente ? "Criando…" : "Criar sessão"}

@@ -55,18 +55,22 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
   const sessao = await obterSessao(id);
   if (!sessao) notFound();
 
-  // Vai pro navegador para a retomada: ele compara com a pasta escolhida e
-  // reprocessa só o que falta.
-  const jaEnviadas = await fotosJaEnviadas(sessao.id);
-
-  // A lista aparece assim que existe escolha, não só depois de finalizada: dá
-  // pra acompanhar o cliente escolhendo e adiantar o trabalho.
-  const escolhidas =
-    sessao.total_escolhidas > 0 ? await nomesEscolhidosDaSessao(sessao.id) : [];
-
   // A entrega só existe depois da finalização. Antes disso não há o que ler.
   const passouDaSelecao = ["finalizada", "entregue", "arquivada"].includes(sessao.status);
-  const entregas = passouDaSelecao ? await listarEntregasDoPainel(sessao.id) : [];
+
+  // Quatro leituras que não dependem uma da outra. Em fila, cada uma pagava
+  // uma ida inteira ao Supabase antes da seguinte começar; juntas, a tela
+  // espera só a mais lenta.
+  const [jaEnviadas, escolhidas, entregas, tiras] = await Promise.all([
+    // Vai pro navegador para a retomada: ele compara com a pasta escolhida e
+    // reprocessa só o que falta.
+    fotosJaEnviadas(sessao.id),
+    // A lista aparece assim que existe escolha, não só depois de finalizada:
+    // dá pra acompanhar o cliente escolhendo e adiantar o trabalho.
+    sessao.total_escolhidas > 0 ? nomesEscolhidosDaSessao(sessao.id) : Promise.resolve([]),
+    passouDaSelecao ? listarEntregasDoPainel(sessao.id) : Promise.resolve([]),
+    primeirasFotosPorSessao([sessao.id]),
+  ]);
   const itensEntrega = entregas.map((e) => ({
     id: e.id,
     nome: e.nome_arquivo,
@@ -74,9 +78,10 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
     apagada: e.excluida_em !== null,
   }));
   const jaEntregues = entregas.filter((e) => e.excluida_em === null).map((e) => e.nome_arquivo);
-  const nomesEscolhidas = passouDaSelecao ? await nomesEscolhidosDaSessao(sessao.id) : [];
+  // Mesma leitura de `escolhidas`, que só existe quando há alguma escolha: o
+  // que muda é o filtro de etapa, não a consulta.
+  const nomesEscolhidas = passouDaSelecao ? escolhidas : [];
 
-  const tiras = await primeirasFotosPorSessao([sessao.id]);
   const chavesTira = tiras.get(sessao.id) ?? [];
 
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? "";
@@ -88,7 +93,7 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
     <div className="mx-auto w-full max-w-[1600px]">
       <Link
         href="/admin"
-        className="inline-flex items-center gap-2 font-hud text-xs uppercase tracking-cine text-tinta-3 transition-colors hover:text-tinta"
+        className="inline-flex items-center gap-2 font-body text-xs font-medium text-tinta-3 transition-colors hover:text-tinta"
       >
         <ArrowLeft className="size-3.5" />
         Sessões
@@ -120,7 +125,7 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
         <div className="flex flex-col gap-faixa border border-linha-forte bg-superficie p-6">
           {etapa === "subir" && (
             <div>
-              <h2 className="font-hud text-hud uppercase tracking-cine text-tinta-3">
+              <h2 className="font-body text-hud font-medium text-tinta-3">
                 Subir fotos
               </h2>
               <UploadClient sessaoId={sessao.id} jaEnviadas={jaEnviadas} />
@@ -129,7 +134,7 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
 
           {etapa === "abrir" && (
             <div>
-              <h2 className="font-hud text-hud uppercase tracking-cine text-tinta-3">
+              <h2 className="font-body text-hud font-medium text-tinta-3">
                 Pronto pra abrir
               </h2>
               <p className="mt-2 text-corpo text-tinta-2">
@@ -149,7 +154,7 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
           {etapa === "escolhendo" && (
             <div className="flex flex-col gap-faixa">
               <div>
-                <h2 className="font-hud text-hud uppercase tracking-cine text-tinta-3">
+                <h2 className="font-body text-hud font-medium text-tinta-3">
                   O cliente está escolhendo
                 </h2>
                 {sessao.total_escolhidas > 0 ? (
@@ -176,7 +181,7 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
                 )}
               </div>
 
-              <div className="border-t border-linha pt-faixa">
+              <div className="pt-faixa">
                 <MensagemCliente
                   tipo="convite"
                   titulo={sessao.titulo}
@@ -192,7 +197,7 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
 
           {etapa === "expirada" && (
             <div>
-              <h2 className="font-hud text-hud uppercase tracking-cine text-tinta-3">
+              <h2 className="font-body text-hud font-medium text-tinta-3">
                 O prazo venceu
               </h2>
               <p className="mt-2 text-corpo text-tinta-2">
@@ -209,7 +214,7 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
           {etapa === "finalizada" && (
             <div className="flex flex-col gap-faixa">
               <div>
-                <h2 className="font-hud text-hud uppercase tracking-cine text-tinta-3">
+                <h2 className="font-body text-hud font-medium text-tinta-3">
                   Pronto pra tratar
                 </h2>
                 <p className="mt-2 text-corpo text-tinta-2">
@@ -235,9 +240,9 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
               {/* Depois de tratar: mandar as tratadas, ou tirar da frente. As
                   duas saídas ficam lado a lado de propósito — a sessão não
                   fica "finalizada" para sempre, cobrando atenção. */}
-              <div className="flex flex-col gap-faixa border-t border-linha pt-faixa">
+              <div className="flex flex-col gap-faixa pt-faixa">
                 <div>
-                  <h2 className="font-hud text-hud uppercase tracking-cine text-tinta-3">
+                  <h2 className="font-body text-hud font-medium text-tinta-3">
                     Depois de tratar
                   </h2>
                   <p className="mt-2 text-corpo text-tinta-2">
@@ -257,7 +262,7 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
                   />
                   <ListaEntregues sessaoId={sessao.id} itens={itensEntrega} />
                   {jaEntregues.length > 0 && (
-                    <div className="border-t border-linha pt-4">
+                    <div className="pt-4">
                       <ConcluirEntrega sessaoId={sessao.id} total={jaEntregues.length} />
                     </div>
                   )}
@@ -282,7 +287,7 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
           {etapa === "entregue" && (
             <div className="flex flex-col gap-faixa">
               <div>
-                <h2 className="font-hud text-hud uppercase tracking-cine text-tinta-3">Entregue</h2>
+                <h2 className="font-body text-hud font-medium text-tinta-3">Entregue</h2>
                 <p className="mt-2 text-corpo text-tinta-2">
                   {sessao.total_entregues}{" "}
                   {sessao.total_entregues === 1 ? "foto tratada está" : "fotos tratadas estão"} no ar
@@ -311,17 +316,17 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
                 whatsapp={sessao.cliente_whatsapp}
               />
 
-              <div className="border-t border-linha pt-faixa">
+              <div className="pt-faixa">
                 <ListaEntregues sessaoId={sessao.id} itens={itensEntrega} />
               </div>
 
-              <div className="flex flex-wrap items-start gap-3 border-t border-linha pt-faixa">
+              <div className="flex flex-wrap items-start gap-3 pt-faixa">
                 <EstenderEntrega sessaoId={sessao.id} />
                 <BotaoArquivar sessaoId={sessao.id} rotulo="Arquivar" />
               </div>
 
-              <details className="border-t border-linha pt-faixa">
-                <summary className="cursor-pointer font-hud text-quadronum uppercase tracking-cine text-tinta-3 transition-colors hover:text-tinta-2">
+              <details className="pt-faixa">
+                <summary className="cursor-pointer font-body text-quadronum font-medium text-tinta-3 transition-colors hover:text-tinta-2">
                   Subir mais tratadas
                 </summary>
                 <div className="mt-4">
@@ -338,7 +343,7 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
           {etapa === "arquivada" && (
             <div className="flex flex-col gap-faixa">
               <div>
-                <h2 className="font-hud text-hud uppercase tracking-cine text-tinta-3">Arquivada</h2>
+                <h2 className="font-body text-hud font-medium text-tinta-3">Arquivada</h2>
                 <p className="mt-2 text-corpo text-tinta-2">
                   Saiu da lista principal
                   {sessao.arquivada_em && ` em ${formatarData(sessao.arquivada_em)}`}. Nada foi apagado.
@@ -391,15 +396,15 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
             </div>
           </div>
 
-          <dl className="grid grid-cols-2 gap-faixa border-y border-linha py-faixa">
+          <dl className="grid grid-cols-2 gap-faixa py-faixa">
             <div>
-              <dt className="font-hud text-quadronum uppercase tracking-cine text-tinta-3">
+              <dt className="font-body text-quadronum font-medium text-tinta-3">
                 Fotos
               </dt>
               <dd className="mt-1 font-hud text-apoio text-tinta">{sessao.total_fotos}</dd>
             </div>
             <div>
-              <dt className="font-hud text-quadronum uppercase tracking-cine text-tinta-3">
+              <dt className="font-body text-quadronum font-medium text-tinta-3">
                 {passouDaSelecao ? "Apagadas" : "Extras"}
               </dt>
               <dd className="mt-1 font-hud text-apoio text-tinta">
@@ -407,7 +412,7 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
               </dd>
             </div>
             <div className="col-span-2">
-              <dt className="font-hud text-quadronum uppercase tracking-cine text-tinta-3">
+              <dt className="font-body text-quadronum font-medium text-tinta-3">
                 {passouDaSelecao ? "Finalizada em" : "Prazo"}
               </dt>
               <dd className="mt-1 font-hud text-apoio text-tinta">
@@ -421,7 +426,7 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
           </dl>
 
           <div>
-            <h2 className="font-hud text-quadronum uppercase tracking-cine text-tinta-3">
+            <h2 className="font-body text-quadronum font-medium text-tinta-3">
               Link da galeria
             </h2>
             <div className="mt-2 flex flex-wrap items-center gap-3">
@@ -446,8 +451,8 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
             </p>
           )}
 
-          <details className="border-t border-linha pt-faixa">
-            <summary className="cursor-pointer font-hud text-quadronum uppercase tracking-cine text-tinta-3 transition-colors hover:text-tinta-2">
+          <details className="pt-faixa">
+            <summary className="cursor-pointer font-body text-quadronum font-medium text-tinta-3 transition-colors hover:text-tinta-2">
               Contato do cliente
             </summary>
             <div className="mt-4">
@@ -463,8 +468,8 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
               bancada inteira, e depois de finalizada as não escolhidas já
               saíram do R2, então subir mais foto não faz sentido. */}
           {(etapa === "abrir" || etapa === "escolhendo" || etapa === "expirada") && (
-            <details className="border-t border-linha pt-faixa">
-              <summary className="cursor-pointer font-hud text-quadronum uppercase tracking-cine text-tinta-3 transition-colors hover:text-tinta-2">
+            <details className="pt-faixa">
+              <summary className="cursor-pointer font-body text-quadronum font-medium text-tinta-3 transition-colors hover:text-tinta-2">
                 Subir mais fotos
               </summary>
               <div className="mt-4">
@@ -474,8 +479,8 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
           )}
 
           {etapa === "finalizada" && (
-            <details className="border-t border-linha pt-faixa">
-              <summary className="cursor-pointer font-hud text-quadronum uppercase tracking-cine text-tinta-3 transition-colors hover:text-tinta-2">
+            <details className="pt-faixa">
+              <summary className="cursor-pointer font-body text-quadronum font-medium text-tinta-3 transition-colors hover:text-tinta-2">
                 Reabrir para o cliente
               </summary>
               <div className="mt-4">
@@ -484,8 +489,8 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
             </details>
           )}
 
-          <div className="border-t border-linha pt-faixa">
-            <h2 className="font-hud text-quadronum uppercase tracking-cine text-tinta-3">
+          <div className="pt-faixa">
+            <h2 className="font-body text-quadronum font-medium text-tinta-3">
               Zona de perigo
             </h2>
             <p className="mt-2 text-apoio text-tinta-2">
@@ -501,8 +506,8 @@ export default async function SessaoPage({ params }: PageProps<"/admin/sessoes/[
           </div>
 
           {sessao.observacoes && (
-            <details className="border-t border-linha pt-faixa" open>
-              <summary className="cursor-pointer font-hud text-quadronum uppercase tracking-cine text-tinta-3 transition-colors hover:text-tinta-2">
+            <details className="pt-faixa" open>
+              <summary className="cursor-pointer font-body text-quadronum font-medium text-tinta-3 transition-colors hover:text-tinta-2">
                 Observações
               </summary>
               <p className="mt-2 whitespace-pre-wrap text-apoio text-tinta-2">

@@ -34,7 +34,7 @@ export default function ListaNomes({
   return (
     <section>
       <div className="flex flex-wrap items-center gap-3">
-        <h2 className="mr-auto font-hud text-xs uppercase tracking-cine text-tinta-3">
+        <h2 className="mr-auto font-body text-xs font-medium text-tinta-3">
           Seleção do cliente · {nomes.length}{" "}
           {nomes.length === 1 ? "foto" : "fotos"}
         </h2>

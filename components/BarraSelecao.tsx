@@ -91,14 +91,14 @@ export default function BarraSelecao({ escolhidas, incluidas, aviso, acao, bande
           </span>
           <span className="font-hud text-hud text-tinta-3">/{incluidas}</span>
           {extras > 0 && (
-            <span className="aviso-entra font-hud text-hud text-rec-papel">
+            <span className="aviso-entra font-body text-hud text-rec-papel">
               +{extras} {extras === 1 ? "extra" : "extras"}
             </span>
           )}
         </p>
 
         {aviso && (
-          <p role="alert" className="aviso-entra font-hud text-hud text-rec-papel">
+          <p role="alert" className="aviso-entra font-body text-hud text-rec-papel">
             {aviso}
           </p>
         )}
@@ -111,7 +111,7 @@ export default function BarraSelecao({ escolhidas, incluidas, aviso, acao, bande
                 onClick={() => setBandejaAberta((aberta) => !aberta)}
                 aria-expanded={bandejaAberta}
                 aria-controls="bandeja-escolhidas"
-                className="h-12 border border-linha-forte px-3 font-hud text-hud uppercase tracking-cine text-tinta-2 transition-colors hover:text-tinta sm:hidden"
+                className="h-12 border border-linha-forte px-3 font-body text-hud font-medium text-tinta-2 transition-colors hover:text-tinta sm:hidden"
               >
                 {bandejaAberta ? "Esconder" : "Ver escolhidas"}
               </button>

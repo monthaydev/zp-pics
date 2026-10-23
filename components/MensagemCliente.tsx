@@ -68,7 +68,7 @@ export default function MensagemCliente(props: Props) {
 
   return (
     <section>
-      <h2 className="font-hud text-xs uppercase tracking-cine text-tinta-3">
+      <h2 className="font-body text-xs font-medium text-tinta-3">
         {props.tipo === "convite" ? "Mensagem pro cliente" : "Avisar o cliente da entrega"}
       </h2>
 
@@ -81,7 +81,7 @@ export default function MensagemCliente(props: Props) {
           placeholder="a que você definiu"
           autoComplete="off"
         />
-        <p className="font-hud text-xs text-tinta-3">
+        <p className="font-body text-xs text-tinta-3">
           Não fica salva. Serve só pra montar o texto abaixo.
         </p>
       </div>
@@ -118,7 +118,7 @@ export default function MensagemCliente(props: Props) {
             {/* Para quem não usa o Gmail na web: abre o app de e-mail do aparelho. */}
             <a
               href={linkMailto(dadosEmail)}
-              className="font-hud text-xs text-tinta-3 underline underline-offset-4 transition-colors hover:text-tinta"
+              className="font-body text-xs text-tinta-3 underline underline-offset-4 transition-colors hover:text-tinta"
             >
               ou no app de e-mail
             </a>
@@ -132,7 +132,7 @@ export default function MensagemCliente(props: Props) {
       </div>
 
       {(!destinoWhatsApp || !dadosEmail) && (
-        <p className="mt-2 font-hud text-xs text-tinta-3">
+        <p className="mt-2 font-body text-xs text-tinta-3">
           {!destinoWhatsApp && !dadosEmail
             ? "Sem WhatsApp nem e-mail cadastrados — corrija em Contato do cliente, ao lado."
             : !destinoWhatsApp

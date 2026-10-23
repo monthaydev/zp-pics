@@ -37,9 +37,6 @@ export default function Home() {
 
         <div className="mt-bloco flex flex-1 flex-col justify-center gap-bloco">
           <header className="flex flex-col gap-3">
-            <p className="font-hud text-hud uppercase tracking-cine text-tinta-3">
-              ZP Studio
-            </p>
             <h1 className="font-display text-cartaz uppercase tracking-cartaz text-balance">
               Suas
               <br />
@@ -58,7 +55,7 @@ export default function Home() {
         <div className="mt-bloco text-center">
           <Link
             href="/admin"
-            className="font-hud text-hud uppercase tracking-cine text-tinta-3 transition-colors hover:text-tinta-2"
+            className="font-body text-hud font-medium text-tinta-3 transition-colors hover:text-tinta-2"
           >
             Sou do ZP Studio
           </Link>
@@ -93,28 +90,21 @@ const PASSOS = [
 
 function ComoFunciona() {
   return (
-    <section className="mt-secao border-t border-linha pt-bloco">
-      <h2 className="font-hud text-hud uppercase tracking-cine text-tinta-3">
+    <section className="mt-secao">
+      <h2 className="font-body text-hud font-medium text-tinta-3">
         Como funciona
       </h2>
 
-      {/* Três colunas separadas por fio no desktop — não mais uma coluna
-          empilhada. No celular continua empilhado, porque é onde a maioria
-          dos clientes da ZP abre este link. */}
-      <ol className="mt-bloco grid grid-cols-1 gap-bloco sm:grid-cols-3 sm:divide-x sm:divide-linha">
+      {/* Três colunas no desktop, empilhado no celular — é onde a maioria
+          dos clientes da ZP abre este link. Sem fio entre elas: o espaço
+          já separa, e a numeração é uma palavra no título, não um bloco. */}
+      <ol className="mt-bloco grid grid-cols-1 gap-bloco sm:grid-cols-3 sm:gap-x-10">
         {PASSOS.map((passo, indice) => (
-          <li key={passo.titulo} className="flex flex-col gap-3 sm:px-6 sm:first:pl-0">
-            {/* Mono e com zero à esquerda: é contagem, e contagem no projeto é
-                sempre mono — mesmo tratamento do contador da galeria. */}
-            <span aria-hidden className="font-hud text-hud text-tinta-3">
-              {String(indice + 1).padStart(2, "0")}
-            </span>
-            <div className="min-w-0">
-              <h3 className="font-body text-corpo text-tinta">{passo.titulo}</h3>
-              <p className="mt-junto text-apoio text-tinta-2">
-                {passo.texto}
-              </p>
-            </div>
+          <li key={passo.titulo} className="min-w-0">
+            <h3 className="font-body text-corpo font-semibold text-tinta">
+              {indice + 1}. {passo.titulo}
+            </h3>
+            <p className="mt-junto text-apoio text-tinta-2">{passo.texto}</p>
           </li>
         ))}
       </ol>

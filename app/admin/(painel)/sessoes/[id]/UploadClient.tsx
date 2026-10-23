@@ -287,7 +287,7 @@ export default function UploadClient({
           Escolher arquivos
         </Button>
 
-        <p className="mt-6 font-hud text-xs text-tinta-3">
+        <p className="mt-6 font-body text-xs text-tinta-3">
           O arquivo original não sai da sua máquina. Sobem só a miniatura e a
           prévia com marca d&apos;água.
         </p>
@@ -331,14 +331,14 @@ export default function UploadClient({
       )}
 
       {erroGeral && (
-        <p className="mt-4 font-hud text-xs text-rec-papel" aria-live="polite">
+        <p className="mt-4 font-body text-xs text-rec-papel" aria-live="polite">
           {erroGeral}
         </p>
       )}
 
       {falhas.length > 0 && (
         <div className="mt-6">
-          <p className="font-hud text-xs uppercase tracking-cine text-tinta-3">
+          <p className="font-body text-xs font-medium text-tinta-3">
             {falhas.length} não subiram
           </p>
           <ul className="mt-2 space-y-1">
@@ -348,7 +348,7 @@ export default function UploadClient({
               </li>
             ))}
           </ul>
-          <p className="mt-2 font-hud text-xs text-tinta-3">
+          <p className="mt-2 font-body text-xs text-tinta-3">
             Escolha a pasta de novo: só o que falta é reprocessado.
           </p>
         </div>

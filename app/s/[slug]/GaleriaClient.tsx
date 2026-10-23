@@ -449,7 +449,7 @@ export default function GaleriaClient({
               // Primário sólido — o mesmo peso do botão `Entrar` da tela de
               // senha. É a ação que fecha o produto; antes era um contorno de
               // 40px encostado na barra, o elemento mais quieto da tela.
-              className="h-12 shrink-0 bg-tinta px-6 font-body text-sm font-medium uppercase tracking-cine text-fundo transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-linha-forte disabled:text-tinta-3 disabled:opacity-100"
+              className="h-12 shrink-0 bg-tinta px-6 font-body text-sm font-medium text-fundo transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-linha-forte disabled:text-tinta-3 disabled:opacity-100"
             >
               Finalizar
             </button>
@@ -529,7 +529,7 @@ function BotaoFiltro({
       onClick={aoClicar}
       aria-pressed={ativo}
       className={cn(
-        "flex h-9 items-center gap-2 border px-3 font-hud text-hud uppercase tracking-cine transition-colors",
+        "flex h-9 items-center gap-2 border px-3 font-body text-hud font-medium transition-colors",
         ativo
           ? "border-tinta text-tinta"
           : "border-transparent text-tinta-3 hover:text-tinta-2",

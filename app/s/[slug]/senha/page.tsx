@@ -34,7 +34,7 @@ const PASSOS = [
   {
     titulo: "Finalize",
     texto: "O ZP Studio recebe a lista e trata só as escolhidas. As outras são apagadas.",
-    alerta: "não tem volta",
+    alerta: true,
   },
 ];
 
@@ -78,7 +78,6 @@ export default async function SenhaPage({ params }: PageProps<"/s/[slug]/senha">
 
         <main className="grid min-h-svh lg:grid-cols-[1.1fr_0.9fr] lg:grid-rows-[auto_1fr]">
           <header className="flex flex-col gap-3 px-4 pb-bloco pt-secao sm:px-10 lg:border-r lg:border-linha-forte lg:px-16">
-            <p className="font-hud text-hud uppercase tracking-cine text-tinta-3">ZP Studio</p>
             {/* Reveal por máscara: a linha entra por baixo de um recorte. É o
                 mesmo efeito do site, que lá custava GSAP + SplitText e aqui são
                 duas regras de CSS. */}
@@ -98,9 +97,9 @@ export default async function SenhaPage({ params }: PageProps<"/s/[slug]/senha">
           >
             <SenhaClient slug={slug} />
 
-            <p className="flex justify-between gap-4 border-y border-linha-forte py-3 font-hud text-hud uppercase tracking-cine text-tinta-2">
-              <span>Escolher até {formatarData(sessao.prazo_em)}</span>
-              <span className="tabular-nums">{sessao.fotos_incluidas} no pacote</span>
+            <p className="text-apoio text-tinta-2">
+              Você tem até {formatarData(sessao.prazo_em)} para escolher. O pacote
+              inclui {sessao.fotos_incluidas} fotos.
             </p>
           </section>
 
@@ -111,28 +110,22 @@ export default async function SenhaPage({ params }: PageProps<"/s/[slug]/senha">
             <h2 id="como-funciona" className="sr-only">
               Como funciona
             </h2>
-            {/* A numeração é informação, não enfeite: os passos são uma
-                sequência, e o último só vem depois dos outros dois. */}
-            <ol className="border-t border-linha-forte">
+            {/* Três frases, não um bloco de landing page: sem moldura e sem
+                algarismo em display. A ordem importa (o último passo só vem
+                depois dos outros), por isso continua lista numerada — o
+                número é pequeno e mora na própria frase. */}
+            <ol className="flex max-w-md flex-col gap-bloco">
               {PASSOS.map((passo, indice) => (
-                <li
-                  key={passo.titulo}
-                  className="grid grid-cols-[3rem_1fr] gap-4 border-b border-linha-forte py-5"
-                >
-                  <span aria-hidden className="font-display text-secao leading-none text-tinta-3">
-                    {indice + 1}
-                  </span>
-                  <div className="flex flex-col gap-1">
-                    <p className="font-body font-semibold text-tinta">
-                      {passo.titulo}
-                      {/* Ênfase em tinta, sublinhada — não em `rec`: o laranja
-                          só marca seleção e foco, e aqui não é nenhum dos dois. */}
-                      {passo.alerta && (
-                        <span className="underline decoration-1 underline-offset-4"> — {passo.alerta}</span>
-                      )}
-                    </p>
-                    <p className="text-apoio text-tinta-2">{passo.texto}</p>
-                  </div>
+                <li key={passo.titulo} className="text-corpo text-tinta-2">
+                  <span className="font-body font-semibold text-tinta">
+                    {indice + 1}. {passo.titulo}.
+                  </span>{" "}
+                  {passo.texto}
+                  {/* Ênfase em peso, não em `rec`: o laranja só marca seleção
+                      e foco, e aqui não é nenhum dos dois. */}
+                  {passo.alerta && (
+                    <strong className="font-semibold text-tinta"> Não tem volta.</strong>
+                  )}
                 </li>
               ))}
             </ol>

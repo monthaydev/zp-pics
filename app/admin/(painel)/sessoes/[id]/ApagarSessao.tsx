@@ -133,7 +133,7 @@ export default function ApagarSessao({
         />
 
         {erro && (
-          <p role="alert" className="mt-4 font-hud text-xs text-rec-papel">
+          <p role="alert" className="mt-4 font-body text-xs text-rec-papel">
             {erro}
           </p>
         )}
@@ -143,7 +143,7 @@ export default function ApagarSessao({
             type="button"
             onClick={confirmar}
             disabled={!digitouCerto || enviando}
-            className="h-12 flex-1 bg-tinta px-4 font-body text-sm font-medium uppercase tracking-cine text-fundo transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
+            className="h-12 flex-1 bg-tinta px-4 font-body text-sm font-medium text-fundo transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
           >
             {enviando ? "Apagando…" : "Apagar definitivamente"}
           </button>
@@ -152,7 +152,7 @@ export default function ApagarSessao({
             type="button"
             onClick={() => setAberto(false)}
             disabled={enviando}
-            className="h-12 flex-1 border border-linha-forte px-4 font-body text-sm uppercase tracking-cine text-tinta transition-[colors,transform] duration-150 active:scale-[0.98] hover:border-tinta-2 disabled:opacity-50"
+            className="h-12 flex-1 border border-linha-forte px-4 font-body text-sm text-tinta transition-[colors,transform] duration-150 active:scale-[0.98] hover:border-tinta-2 disabled:opacity-50"
           >
             Cancelar
           </button>

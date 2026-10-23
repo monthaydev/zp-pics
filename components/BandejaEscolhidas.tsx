@@ -48,7 +48,7 @@ export default function BandejaEscolhidas({ escolhidas, travada, aoIr, aoTirar }
 
   if (escolhidas.length === 0) {
     return (
-      <p className="py-3 font-hud text-hud text-tinta-3">
+      <p className="py-3 font-body text-hud text-tinta-3">
         As fotos que você marcar aparecem aqui, para ver o conjunto.
       </p>
     );

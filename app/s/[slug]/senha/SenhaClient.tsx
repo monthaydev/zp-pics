@@ -22,7 +22,7 @@ export default function SenhaClient({ slug }: { slug: string }) {
       <div className="flex flex-col gap-2">
         <label
           htmlFor="senha"
-          className="font-hud text-hud uppercase tracking-cine text-tinta-3"
+          className="font-body text-hud font-medium text-tinta-3"
         >
           Senha do ensaio
         </label>
@@ -45,7 +45,7 @@ export default function SenhaClient({ slug }: { slug: string }) {
       <button
         type="submit"
         disabled={pendente}
-        className="h-12 w-full bg-tinta font-body text-sm font-medium uppercase tracking-cine text-fundo transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.99] disabled:opacity-50"
+        className="h-12 w-full bg-tinta font-body text-sm font-medium text-fundo transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.99] disabled:opacity-50"
       >
         {pendente ? "Conferindo…" : "Ver minhas fotos"}
       </button>
@@ -57,7 +57,7 @@ export default function SenhaClient({ slug }: { slug: string }) {
       <p
         id="erro-senha"
         aria-live="polite"
-        className="-mt-2 min-h-5 font-hud text-hud text-rec-papel empty:min-h-0"
+        className="-mt-2 min-h-5 font-body text-hud text-rec-papel empty:min-h-0"
       >
         {estado.erro && (
           <span key={estado.tentativa} className="aviso-entra inline-block">

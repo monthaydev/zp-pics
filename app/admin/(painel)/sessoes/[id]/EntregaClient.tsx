@@ -337,7 +337,7 @@ export default function EntregaClient({
           Escolher arquivos
         </Button>
 
-        <p className="mt-5 font-hud text-xs text-tinta-3">
+        <p className="mt-5 font-body text-xs text-tinta-3">
           JPEG ou TIFF. O arquivo sobe exatamente como está — sem reduzir e sem marca d&apos;água. É o que
           o cliente vai baixar.
         </p>
@@ -353,7 +353,7 @@ export default function EntregaClient({
 
           {conferencia.faltam.length > 0 && (
             <div>
-              <p className="font-hud text-xs uppercase tracking-cine text-tinta-3">
+              <p className="font-body text-xs font-medium text-tinta-3">
                 Faltam {conferencia.faltam.length}
               </p>
               <p className="mt-1 break-words font-hud text-xs text-tinta-2">
@@ -367,7 +367,7 @@ export default function EntregaClient({
 
           {foraDeNovo.length > 0 && (
             <div className="border border-tinta-3 p-3">
-              <p className="font-hud text-xs uppercase tracking-cine text-tinta">
+              <p className="font-body text-xs font-medium text-tinta">
                 {foraDeNovo.length} {foraDeNovo.length === 1 ? "arquivo não está" : "arquivos não estão"} entre as
                 escolhidas
               </p>
@@ -389,7 +389,7 @@ export default function EntregaClient({
 
           {suspeitaDeOriginal && (
             <div role="alert" className="border border-tinta-3 p-3">
-              <p className="font-hud text-xs uppercase tracking-cine text-tinta">
+              <p className="font-body text-xs font-medium text-tinta">
                 Estes arquivos não parecem ter passado pelo Lightroom
               </p>
               <p className="mt-1 text-xs text-tinta-2">
@@ -401,7 +401,7 @@ export default function EntregaClient({
 
           {repetidosNoDrop.length > 0 && (
             <div role="alert" className="border border-tinta-3 p-3">
-              <p className="font-hud text-xs uppercase tracking-cine text-tinta">
+              <p className="font-body text-xs font-medium text-tinta">
                 Mesmo nome em mais de uma pasta ({repetidosNoDrop.length})
               </p>
               <p className="mt-1 break-words font-hud text-xs text-tinta-2">{resumirNomes(repetidosNoDrop)}</p>
@@ -414,7 +414,7 @@ export default function EntregaClient({
 
           {recusados.length > 0 && (
             <div>
-              <p className="font-hud text-xs uppercase tracking-cine text-tinta-3">
+              <p className="font-body text-xs font-medium text-tinta-3">
                 Formato não aceito ({recusados.length})
               </p>
               <p className="mt-1 break-words font-hud text-xs text-tinta-2">{resumirNomes(recusados)}</p>
@@ -458,21 +458,21 @@ export default function EntregaClient({
           >
             <div className="h-full bg-tinta transition-[width]" style={{ width: `${porcento}%` }} />
           </div>
-          <p className="mt-2 font-hud text-xs text-tinta-3">
+          <p className="mt-2 font-body text-xs text-tinta-3">
             Pode demorar com arquivos grandes. Não feche esta aba.
           </p>
         </div>
       )}
 
       {erroGeral && (
-        <p role="alert" className="mt-4 font-hud text-xs text-rec-papel">
+        <p role="alert" className="mt-4 font-body text-xs text-rec-papel">
           {erroGeral}
         </p>
       )}
 
       {falhas.length > 0 && (
         <div role="alert" className="mt-4 border border-linha-forte p-4">
-          <p className="font-hud text-xs uppercase tracking-cine text-rec-papel">
+          <p className="font-body text-xs font-medium text-rec-papel">
             {falhas.length} {falhas.length === 1 ? "falha" : "falhas"}
           </p>
           <ul className="mt-2 flex flex-col gap-1">

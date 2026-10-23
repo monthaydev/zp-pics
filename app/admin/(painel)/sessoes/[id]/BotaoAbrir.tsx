@@ -25,7 +25,7 @@ export default function BotaoAbrir({ sessaoId }: { sessaoId: string }) {
       >
         {pendente ? "Abrindo…" : "Abrir para o cliente"}
       </Button>
-      {erro && <p className="font-hud text-xs text-rec-papel">{erro}</p>}
+      {erro && <p className="font-body text-xs text-rec-papel">{erro}</p>}
     </div>
   );
 }

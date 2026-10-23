@@ -38,7 +38,7 @@ function useAcao() {
 
 function Erro({ texto }: { texto: string | null }) {
   return texto ? (
-    <p role="alert" className="mt-2 font-hud text-xs text-rec-papel">
+    <p role="alert" className="mt-2 font-body text-xs text-rec-papel">
       {texto}
     </p>
   ) : null;
@@ -151,7 +151,7 @@ export function ListaEntregues({
   const ativos = itens.filter((i) => !i.apagada);
   return (
     <div>
-      <p className="font-hud text-xs uppercase tracking-cine text-tinta-3">
+      <p className="font-body text-xs font-medium text-tinta-3">
         {ativos.length} {ativos.length === 1 ? "arquivo" : "arquivos"} ·{" "}
         {formatarTamanho(ativos.reduce((s, i) => s + i.tamanho, 0))}
       </p>

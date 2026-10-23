@@ -1,6 +1,7 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
+import { cache } from "react";
 
 import { criarClienteServidor } from "@/lib/supabase/server";
 
@@ -10,13 +11,21 @@ import { criarClienteServidor } from "@/lib/supabase/server";
  * Sempre `getUser()`, nunca `getSession()`: o primeiro valida o token contra o
  * servidor de auth, o segundo só lê o cookie e acredita no que está escrito.
  */
-export async function obterAdmin() {
+/*
+  `cache` do React: o layout do painel e a página chamam `exigirAdmin` na mesma
+  requisição, e cada `getUser()` é uma ida ao servidor de auth. Sem isto eram
+  duas por navegação (mais a do proxy) — medido no Vercel, a tela "demorava
+  pra entrar" porque as idas ficavam em fila. Dentro de UMA requisição o
+  resultado é reaproveitado; entre requisições nada é guardado, então o token
+  continua sendo conferido com o servidor a cada navegação.
+*/
+export const obterAdmin = cache(async () => {
   const supabase = await criarClienteServidor();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   return user;
-}
+});
 
 /**
  * Porta de entrada de toda página e Server Action do painel.

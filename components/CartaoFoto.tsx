@@ -30,6 +30,22 @@ type Props = {
 };
 
 /**
+ * Três voltas de lápis dermatográfico, desenhadas à mão no mesmo viewBox.
+ *
+ * Na folha de contato de papel o fotógrafo circula o quadro escolhido em
+ * vermelho, e nenhuma volta sai igual à outra. Aqui a volta é fixa por foto
+ * (a posição no ensaio sorteia qual das três), não muda a cada render e não
+ * anima sozinha — só "é desenhada" quando o cliente marca. `preserveAspectRatio
+ * none` estica o traço para a proporção da foto, e `non-scaling-stroke` mantém a
+ * espessura igual em retrato e paisagem.
+ */
+const VOLTAS = [
+  "M5 7 C30 2 68 4 95 5 C98 30 96 68 94 95 C68 98 32 96 5 94 C2 68 3 32 6 4 C11 2 15 5 22 3",
+  "M7 4 C36 6 66 2 96 7 C94 36 98 66 95 96 C64 94 33 98 4 94 C6 66 2 34 5 9 C9 5 16 7 21 4",
+  "M4 5 C34 3 70 6 94 3 C97 33 95 70 97 95 C66 97 30 94 3 97 C5 68 3 30 4 7 C8 3 14 4 19 6",
+];
+
+/**
  * Uma foto na grade.
  *
  * `memo` não é enfeite: sem ele, marcar uma foto re-renderiza as 400 e o clique
@@ -76,12 +92,13 @@ function CartaoFoto({
           data-cartao={indice}
           className={cn(
             "block size-full cursor-zoom-in overflow-hidden bg-superficie transition-shadow duration-200",
-            // A moldura de escolhida cresce da borda pra dentro em vez de
-            // aparecer pronta. É `box-shadow` e não `border` porque borda muda
-            // o tamanho da caixa: com 400 delas, marcar uma foto empurraria a
-            // fileira inteira. Sombra interna ocupa zero espaço de layout.
+            // A moldura reta ficou só como um filete: quem marca a escolha é a
+            // volta de lápis (o `svg` abaixo), e o filete garante que a foto
+            // clara não "perca" a borda onde o traço passa fino. Continua
+            // `box-shadow` e não `border` — borda muda o tamanho da caixa, e
+            // com 400 delas marcar uma foto empurraria a fileira inteira.
             escolhida
-              ? "shadow-[inset_0_0_0_2px_var(--color-rec)]"
+              ? "shadow-[inset_0_0_0_1px_var(--color-rec)]"
               : "shadow-[inset_0_0_0_0_var(--color-rec)]",
           )}
           // O estado entra no rótulo porque o espaço escolhe a partir daqui:
@@ -109,6 +126,35 @@ function CartaoFoto({
             className="size-full object-cover"
           />
         </button>
+
+        {/* A volta de lápis. `aria-hidden` e sem pointer-events: o estado da
+            escolha já está no coração, no filete e no `aria-pressed`, e isto é
+            só a marca visível. O traço aparece por `stroke-dashoffset` — uma
+            transição disparada pelo clique, não uma animação em laço — e por
+            ser transição não roda no primeiro render: reabrir uma galeria com
+            30 escolhidas não desenha 30 voltas na cara de quem chegou. */}
+        <svg
+          aria-hidden
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          className="pointer-events-none absolute inset-0 size-full overflow-visible"
+        >
+          <path
+            d={VOLTAS[posicao % VOLTAS.length]}
+            pathLength={1}
+            fill="none"
+            stroke="var(--color-rec)"
+            strokeWidth={3}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
+            style={{
+              strokeDasharray: 1,
+              strokeDashoffset: escolhida ? 0 : 1,
+              transition: "stroke-dashoffset 320ms cubic-bezier(0.4, 0, 0.2, 1)",
+            }}
+          />
+        </svg>
 
         {/* Número de quadro em selo sobre a foto, como no protótipo escolhido
             (galeria v2, 22/10/2026). Na grade densa de 8 colunas, número e

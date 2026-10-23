@@ -79,7 +79,7 @@ export default async function GaleriaPage({ params }: PageProps<"/s/[slug]">) {
             </p>
           )}
 
-          <p className="mt-4 font-hud text-hud uppercase tracking-cine text-tinta-3">
+          <p className="mt-4 font-body text-hud font-medium text-tinta-3">
             {fotos.length} fotos · prazo {formatarData(sessao.prazo_em)}
           </p>
         </header>

@@ -113,7 +113,7 @@ export default function ProgressoSessao({
               </span>
               <span
                 className={cn(
-                  "font-hud text-quadronum uppercase tracking-cine",
+                  "font-body text-quadronum font-medium",
                   ROTULO[etapa.estado],
                 )}
               >

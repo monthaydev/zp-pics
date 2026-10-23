@@ -28,7 +28,7 @@ export default function ReabrirSessao({
 
   return (
     <section>
-      <h2 className="font-hud text-xs uppercase tracking-cine text-tinta-3">
+      <h2 className="font-body text-xs font-medium text-tinta-3">
         Reabrir para o cliente
       </h2>
 
@@ -70,7 +70,7 @@ export default function ReabrirSessao({
           {pendente ? "Reabrindo…" : "Reabrir"}
         </Button>
 
-        {erro && <p className="font-hud text-xs text-rec-papel">{erro}</p>}
+        {erro && <p className="font-body text-xs text-rec-papel">{erro}</p>}
       </div>
     </section>
   );

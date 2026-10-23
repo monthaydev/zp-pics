@@ -15,7 +15,7 @@ export default async function NovaSessaoPage() {
     <div className="mx-auto w-full max-w-2xl">
       <Link
         href="/admin"
-        className="inline-flex items-center gap-2 font-hud text-xs uppercase tracking-cine text-tinta-3 transition-colors hover:text-tinta"
+        className="inline-flex items-center gap-2 font-body text-xs font-medium text-tinta-3 transition-colors hover:text-tinta"
       >
         <ArrowLeft className="size-3.5" />
         Sessões

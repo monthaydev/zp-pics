@@ -48,7 +48,7 @@ export default function EntrarClient() {
       <div className="flex flex-col gap-2">
         <label
           htmlFor="chave"
-          className="font-hud text-hud uppercase tracking-cine text-tinta-3"
+          className="font-body text-hud font-medium text-tinta-3"
         >
           Chave do ensaio
         </label>
@@ -75,18 +75,18 @@ export default function EntrarClient() {
           <button
             type="submit"
             disabled={indo}
-            className="shrink-0 font-body text-sm font-medium uppercase tracking-cine text-tinta transition-opacity hover:opacity-70 disabled:opacity-50"
+            className="shrink-0 font-body text-sm font-medium text-tinta transition-opacity hover:opacity-70 disabled:opacity-50"
           >
             {indo ? "Procurando…" : "Ver fotos →"}
           </button>
         </div>
       </div>
 
-      <p id="erro-chave" aria-live="polite" className="min-h-5 font-hud text-hud text-rec-papel">
+      <p id="erro-chave" aria-live="polite" className="min-h-5 font-body text-hud text-rec-papel">
         {erro}
       </p>
 
-      <p className="font-hud text-hud text-tinta-3">
+      <p className="font-body text-hud text-tinta-3">
         A chave e a senha chegam juntas, pelo WhatsApp do ZP Studio.
       </p>
     </form>

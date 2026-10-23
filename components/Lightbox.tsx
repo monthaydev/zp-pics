@@ -174,7 +174,7 @@ export default function Lightbox({
 
       <div className="relative flex min-h-0 flex-1 items-center justify-center p-2 sm:p-6">
         {carregando && (
-          <p className="absolute font-hud text-xs uppercase tracking-cine text-tinta-3">
+          <p className="absolute font-body text-xs font-medium text-tinta-3">
             carregando…
           </p>
         )}
@@ -212,7 +212,7 @@ export default function Lightbox({
 
       <footer className="flex items-center justify-center gap-4 border-t border-linha px-4 py-3">
         {travada ? (
-          <p className="font-hud text-xs text-tinta-3">
+          <p className="font-body text-xs text-tinta-3">
             {escolhida ? "Escolhida" : "Não escolhida"}
           </p>
         ) : (
@@ -221,7 +221,7 @@ export default function Lightbox({
             onClick={() => aoAlternar(foto.id)}
             aria-pressed={escolhida}
             className={cn(
-              "flex h-11 items-center gap-3 border px-5 font-body text-sm uppercase tracking-cine transition-[colors,transform] duration-150 active:scale-[0.98]",
+              "flex h-11 items-center gap-3 border px-5 font-body text-sm transition-[colors,transform] duration-150 active:scale-[0.98]",
               escolhida
                 ? "border-rec text-rec-papel"
                 : "border-linha-forte text-tinta hover:border-tinta-2",

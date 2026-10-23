@@ -13,7 +13,7 @@ export default async function LoginPage({
     <main className="flex min-h-svh flex-col items-center justify-center gap-10 px-6 py-16">
       <header className="flex flex-col items-center gap-2 text-center">
         <h1 className="font-display text-secao uppercase tracking-cine">ZP Pics</h1>
-        <p className="font-hud text-xs uppercase tracking-cine text-tinta-3">
+        <p className="font-body text-xs font-medium text-tinta-3">
           Painel do estúdio
         </p>
       </header>

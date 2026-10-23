@@ -36,8 +36,7 @@ export default async function EntregaPage({ params }: PageProps<"/s/[slug]/entre
     return (
       <Tela>
         <main className="mx-auto flex min-h-svh w-full max-w-xl flex-col justify-center gap-4 px-6 py-16">
-          <div className="flex items-start justify-between gap-4">
-            <p className="font-hud text-hud uppercase tracking-cine text-tinta-3">ZP Studio</p>
+          <div className="flex items-start justify-end gap-4">
             <BotaoTema className="-mr-2 -mt-1 shrink-0" />
           </div>
           <h1 className="font-display text-secao uppercase tracking-cine">{sessao.titulo}</h1>
@@ -61,8 +60,8 @@ export default async function EntregaPage({ params }: PageProps<"/s/[slug]/entre
       <main className="mx-auto w-full max-w-7xl px-4 py-bloco sm:px-6">
         <header className="mb-bloco">
           <div className="flex items-start justify-between gap-4">
-            <p className="font-hud text-hud uppercase tracking-cine text-tinta-3">
-              ZP Studio · Fotos tratadas
+            <p className="font-body text-hud font-medium text-tinta-3">
+              Fotos tratadas
             </p>
             <BotaoTema className="-mr-2 -mt-1 shrink-0" />
           </div>
@@ -95,7 +94,7 @@ export default async function EntregaPage({ params }: PageProps<"/s/[slug]/entre
               <a
                 key={i}
                 href={`/api/entrega/${slug}/zip${partes.length > 1 ? `?parte=${i + 1}` : ""}`}
-                className="inline-flex h-12 items-center gap-3 bg-tinta px-6 font-body text-sm font-medium uppercase tracking-cine text-fundo transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.99]"
+                className="inline-flex h-12 items-center gap-3 bg-tinta px-6 font-body text-sm font-medium text-fundo transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.99]"
               >
                 <Download className="size-4" aria-hidden />
                 {partes.length > 1
@@ -103,7 +102,7 @@ export default async function EntregaPage({ params }: PageProps<"/s/[slug]/entre
                   : "Baixar todas (.zip)"}
               </a>
             ))}
-            <p className="font-hud text-hud uppercase tracking-cine text-tinta-3">
+            <p className="font-body text-hud font-medium text-tinta-3">
               Disponível até {formatarData(sessao.entrega_expira_em as string)}
             </p>
             {partes.length > 1 && (

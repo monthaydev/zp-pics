@@ -61,7 +61,7 @@ function LinkNav({ href, children }: { href: string; children: React.ReactNode }
   return (
     <Link
       href={href}
-      className="font-hud text-hud uppercase tracking-cine text-tinta-3 transition-colors hover:text-tinta"
+      className="font-body text-hud font-medium text-tinta-3 transition-colors hover:text-tinta"
     >
       {children}
     </Link>

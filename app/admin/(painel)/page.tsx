@@ -83,7 +83,7 @@ export default async function PainelPage({ searchParams }: PageProps<"/admin">) 
         <div>
           <h1 className="font-display text-secao uppercase tracking-cine">Sessões</h1>
           {sessoes.length > 0 && (
-            <p className="mt-1 font-hud text-apoio text-tinta-3">
+            <p className="mt-1 font-body text-apoio text-tinta-3">
               {sessoes.length} {sessoes.length === 1 ? "ensaio" : "ensaios"}
               {pendentes.length > 0 &&
                 ` · ${pendentes.length} esperando você`}
@@ -111,7 +111,7 @@ export default async function PainelPage({ searchParams }: PageProps<"/admin">) 
                 className={cn(
                   // `shrink-0`/`nowrap`: em 390px as três abas passam da largura, e quebrar
                   // em duas linhas partia o sublinhado da ativa. Rolam em vez de quebrar.
-                  "-mb-px flex h-11 shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-3 font-hud text-hud uppercase tracking-cine transition-colors sm:px-4",
+                  "-mb-px flex h-11 shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-3 font-body text-hud font-medium transition-colors sm:px-4",
                   a.id === aba
                     ? "border-tinta text-tinta"
                     : "border-transparent text-tinta-3 hover:text-tinta-2",
@@ -124,7 +124,7 @@ export default async function PainelPage({ searchParams }: PageProps<"/admin">) 
           </nav>
 
           <details className="mt-bloco border-b border-linha pb-4">
-            <summary className="cursor-pointer font-hud text-hud uppercase tracking-cine text-tinta-3 transition-colors hover:text-tinta-2">
+            <summary className="cursor-pointer font-body text-hud font-medium text-tinta-3 transition-colors hover:text-tinta-2">
               O que significa cada status
             </summary>
             <dl className="mt-4 flex flex-col gap-3">
@@ -143,7 +143,7 @@ export default async function PainelPage({ searchParams }: PageProps<"/admin">) 
 
           {aba === "andamento" && pendentes.length > 0 && (
             <section className="mt-faixa">
-              <h2 className="font-hud text-hud uppercase tracking-cine text-tinta-3">
+              <h2 className="font-body text-hud font-medium text-tinta-3">
                 Precisa de você
               </h2>
               <ul className="mt-3 flex flex-col gap-px overflow-hidden border border-linha-forte">
@@ -168,7 +168,7 @@ export default async function PainelPage({ searchParams }: PageProps<"/admin">) 
             </section>
           )}
 
-          <h2 className="mt-faixa font-hud text-hud uppercase tracking-cine text-tinta-3">
+          <h2 className="mt-faixa font-body text-hud font-medium text-tinta-3">
             {ABAS.find((a) => a.id === aba)!.rotulo}
           </h2>
 
@@ -189,7 +189,7 @@ export default async function PainelPage({ searchParams }: PageProps<"/admin">) 
               {/* Cabeçalho grudado no topo ao rolar — régua de data-dense
                   dashboard: numa lista longa, o nome da coluna nunca deveria
                   sair de vista. */}
-              <div className="sticky top-0 z-10 flex items-center gap-x-6 border-b border-linha bg-fundo px-2 pb-2 font-hud text-quadronum uppercase tracking-cine text-tinta-3">
+              <div className="sticky top-0 z-10 flex items-center gap-x-6 border-b border-linha bg-fundo px-2 pb-2 font-body text-quadronum font-medium text-tinta-3">
                 <span className="w-[168px] shrink-0" aria-hidden />
                 <span className="min-w-40 flex-1">Ensaio</span>
                 <span className="w-24 shrink-0">Status</span>
